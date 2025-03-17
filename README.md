@@ -27,5 +27,5 @@ Contrasenya: password
 
 ## 🌐 URL Pública a Docker Hub
 
-La imatge preconstruïda està disponible a [docker hub](https://hub.docker.com/r/ianditb/flask_app), o:  
-`docker pull ianditb/flask_app:latest`
+La imatge preconstruïda està disponible a [docker hub](https://hub.docker.com/r/aymanitb/flask_app), o:  
+`docker pull aymanitb/flask_app:latest`
