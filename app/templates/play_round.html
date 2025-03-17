@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jugar Ronda Lliga</title>
+    <style>
+        .round-navigation { margin: 20px 0; }
+        .match-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .player-option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .player-option.selected {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .nav-button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .matches-button {
+            padding: 8px 16px;
+            background-color: #218838;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .round-counter {
+            padding: 8px 16px;
+        }.completion-status {
+            margin: 15px 0;
+        }
+        progress {
+            width: 200px;
+            height: 20px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="round-navigation">
+        <h2>Ronda {{ current_round_num }}</h2>
+        <div class="navigation-buttons">
+            <a href="{{ url_for('previous_round') }}" 
+               class="nav-button {% if current_round_num == 1 %}disabled{% endif %}">
+                ← Ronda Anterior
+            </a>
+            <span class="round-counter">
+                Ronda {{ current_round_num }} de {{ total_rounds }}
+            </span>
+            <a href="{{ url_for('next_round') }}" 
+               class="nav-button {% if current_round_num == total_rounds %}disabled{% endif %}">
+                Ronda Següent →
+            </a>
+        </div>
+    </div>
+
+    {% for match in current_round.matches %}
+    <div class="match-card">
+        <h3>Partida {{ loop.index }}</h3>
+        <form action="{{ url_for('submit_result') }}" method="post">
+            <input type="hidden" name="round_num" value="{{ current_round_num }}">
+            <input type="hidden" name="match_index" value="{{ loop.index0 }}">
+
+            <div class="player-option" onclick="selectWinner('{{ match.participants[0] }}', this)">
+                <input type="radio" name="winner" id="player1-{{ loop.index }}" 
+                       value="{{ match.participants[0] }}"
+                       {% if match.winner == match.participants[0] %}checked{% endif %}>
+                <label for="player1-{{ loop.index }}">{{ match.participants[0] }}</label>
+            </div>
+
+            <div class="vs-text">VS</div>
+
+            <div class="player-option" onclick="selectWinner('{{ match.participants[1] }}', this)">
+                <input type="radio" name="winner" id="player2-{{ loop.index }}" 
+                       value="{{ match.participants[1] }}"
+                       {% if match.winner == match.participants[1] %}checked{% endif %}>
+                <label for="player2-{{ loop.index }}">{{ match.participants[1] }}</label>
+            </div>
+            <button type="submit">Guardar Resultat</button>
+        </form>
+    </div>
+    {% endfor %}
+    {% if current_round.matches %}
+    <div class="completion-status">
+        {% set completed = current_round.matches|selectattr('winner')|list|length %}
+        <progress value="{{ completed }}" max="{{ current_round.matches|length }}"></progress>
+        <span>{{ completed }}/{{ current_round.matches|length }} partides completades</span>
+    </div>
+    {% endif %}
+    <a href="{{ url_for('matchup_form') }}" 
+       class="matches-button">
+        ← Veure Partides
+    </a>
+    <script>
+        function selectWinner(player, element) {
+            document.querySelectorAll('.player-option').forEach(div => {
+                div.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.querySelector(`input[value="${player}"]`).checked = true;
+        }
+    </script>
+</body>
+<br>
+<a href="/" style="text-decoration: none; color: #4CAF50;">Tornar a l'inici</a>
+</html>

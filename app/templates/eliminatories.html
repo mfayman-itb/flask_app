@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eliminatòries</title>
+    <style>
+        .rounds-container {
+            margin: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+        .round {
+            margin-bottom: 30px;
+        }
+        .match {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        select {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Eliminatòries</h1>
+<div class="tournament-init">
+    {% if not bracket.participants %}
+        <form method="POST">
+            <button type="submit" class="btn btn-success {% if not is_valid %}disabled{% endif %}"
+                    {% if not is_valid %}title="Requereix 2/4/8/16 participants"{% endif %}>
+                Iniciar Torneig
+            </button>
+            {% if not is_valid %}
+            <p class="help-text">
+                * Actuals participants: {{ participant_count }}<br>
+                * Necessites {{ next_power }} participants (potència de 2)
+            </p>
+            {% endif %}
+        </form>
+    {% else %}
+    <div class="bracket-view">
+        {% for round in bracket.rounds %}
+        <div class="round {% if round.round_number == bracket.current_round %}current-round{% endif %}">
+            <h3>Ronda {{ round.round_number }}</h3>
+
+            {% for match in round.matches %}
+            <div class="match-card {% if match.winner %}completed{% endif %}">
+                {% if round.round_number == bracket.current_round and not match.winner %}
+                <form action="{{ url_for('update_elimination') }}" method="post">
+                    <input type="hidden" name="round_num" value="{{ round.round_number }}">
+                    <input type="hidden" name="match_index" value="{{ loop.index0 }}">
+
+                    <div class="player-option {% if match.winner == match.participants[0] %}winner{% endif %}">
+                        <input type="radio" name="winner" value="{{ match.participants[0] }}">
+                        <label>{{ match.participants[0] }}</label>
+                    </div>
+
+                    <div class="vs-text">VS</div>
+
+                    <div class="player-option {% if match.winner == match.participants[1] %}winner{% endif %}">
+                        <input type="radio" name="winner" value="{{ match.participants[1] }}">
+                        <label>{{ match.participants[1] }}</label>
+                    </div>
+
+                    <button type="submit">Guardar</button>
+                </form>
+                {% else %}
+                <div class="match-result">
+                    <span class="winner">{{ match.winner }}</span>
+                    <div class="previous-match">
+                        {{ match.participants[0] }} vs {{ match.participants[1] }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const allPlayers = {{ all_players|tojson|safe }};
+            const existingMatches = {{ existing_matches|default([])|tojson|safe }};
+            const player1Select = document.getElementById('player1');
+            const player2Select = document.getElementById('player2')
+
+        function updateOpponentOptions() {
+            const selectedPlayer = player1Select.value;
+            const scheduledPairs = new Set(
+                existingMatches.map(m => m.join('::'))
+            );
+
+            const validOpponents = allPlayers.filter(player => {
+                const pair = [selectedPlayer, player].sort().join('::');
+                return player !== selectedPlayer && !scheduledPairs.has(pair);
+            });
+
+            player2Select.innerHTML = validOpponents
+                .map(p => `<option value="${p}">${p}</option>`)
+                .join('');
+
+            player2Select.disabled = validOpponents.length === 0;
+        }
+
+        if (player1Select && player2Select) {
+            updateOpponentOptions();
+            player1Select.addEventListener('change', updateOpponentOptions);
+        }
+    });
+    </script>
+</body>
+<br>
+<a href="/" style="text-decoration: none; color: #4CAF50;">Tornar a l'inici</a>
+</html>

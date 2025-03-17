@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Partides</title>
+    <style>
+        .match-container { margin: 20px; padding: 20px; border: 1px solid #ddd; }
+        .player-select { margin: 10px 0; }
+        .vs-text { font-weight: bold; text-align: center; margin: 10px 0; }
+        .match-history { margin-top: 20px; }
+        .completed { color: green; font-weight: bold; }
+        .error { color: red; }
+        .rounds-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .round {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .round h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .round-matches {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .round-matches li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .round-matches li:last-child {
+            border-bottom: none;
+        }
+        select:disabled {
+            background-color: #f8f9fa;
+            border-color: #ced4da;
+            opacity: 1;
+        }
+        select:empty {
+            height: 38px;
+            background-color: #f8f9fa;
+            border: 1px dashed #ced4da;
+        }
+        .reset-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            color: white;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        .match-results {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .match-results tr {
+            border-bottom: 1px solid #eee;
+        }
+        .match-results td {
+            padding: 8px 12px;
+        }
+        .completed {
+            background-color: #f0fff4;
+        }
+        .pending {
+            background-color: #fff9f0;
+        }
+        .winner {
+            color: #2c7a47;
+            font-weight: 500;
+        }
+        .pending-text {
+            color: #9c6d3e;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Partides</h1>
+    <!-- Manual Match Scheduling Section -->
+    <div class="match-container">
+        {% if available_players|length < 2 %}
+            <div class="completed">Totes les partides han estat programades!</div>
+        {% else %}
+            <form method="POST" action="{{ url_for('partides') }}">
+                <input type="hidden" name="manual" value="true">
+                <div class="player-select">
+                    <label>Jugador 1:</label>
+                    <select id="player1" name="player1" required>
+                        {% for player in available_players %}
+                        <option value="{{ player }}">{{ player }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="vs-text">VS</div>
+
+                <div class="player-select">
+                    <label>Jugador 2:</label>
+                    <select id="player2" name="player2" required>
+                        <!-- JavaScript will populate -->
+                    </select>
+                </div>
+
+                <button type="submit">Programar Partida</button>
+            </form>
+        {% endif %}
+
+        <!-- Scheduled Matches List -->
+        <div class="scheduled-matches">
+            <h3>Partides Programades ({{ existing_matches|length }}):</h3>
+            {% if existing_matches %}
+            <ul>
+                {% for match in existing_matches %}
+                <li>{{ match.participants[0] }} vs {{ match.participants[1] }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Encara no hi ha partides programades</p>
+            {% endif %}
+        </div>
+        <div class="match-history">
+            <h3>Resultats per Ronda:</h3>
+            {% if rounds %}
+            <div class="rounds-container">
+                {% for round in rounds %}
+                <div class="round">
+                    <h4>Jornada {{ loop.index }}</h4>
+                    <table class="match-results">
+                        {% for match in round.matches %}
+                        <tr class="{% if match.winner %}completed{% else %}pending{% endif %}">
+                            <td>{{ match.participants[0] }} vs {{ match.participants[1] }}</td>
+                            <td>
+                                {% if match.winner %}
+                                <span class="winner">Guanyador: {{ match.winner }}</span>
+                                {% else %}
+                                <span class="pending-text">Pendent</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>Encara no hi ha resultats registrats</p>
+            {% endif %}
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('play_round') }}" class="btn btn-success">
+                Jugar Rondes
+            </a>
+            <form action="{{ url_for('reset_matches') }}" method="get">
+                <button type="submit" class="btn btn-danger">
+                    Reiniciar Partides
+                </button>
+            </form>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const allPlayers = {{ all_players|tojson|safe }};
+            const existingMatches = {{ existing_matches|tojson|safe }};
+            const player1Select = document.getElementById('player1');
+            const player2Select = document.getElementById('player2');
+
+            function updateOpponentOptions() {
+                const selectedPlayer = player1Select.value;
+                const scheduledPairs = new Set(
+                    existingMatches.map(m => 
+                        m.participants.sort().join('::')
+                    )
+                );
+
+                const validOpponents = allPlayers.filter(player => {
+                    const pair = [selectedPlayer, player].sort().join('::');
+                    return player !== selectedPlayer && !scheduledPairs.has(pair);
+                });
+
+                player2Select.innerHTML = validOpponents
+                    .map(p => `<option value="${p}">${p}</option>`)
+                    .join('');
+
+                player2Select.disabled = validOpponents.length === 0;
+            }
+
+            if (player1Select && player2Select) {
+                updateOpponentOptions();
+                player1Select.addEventListener('change', updateOpponentOptions);
+            }
+        });
+        </script>
+</body>
+<br>
+<a href="/" style="text-decoration: none; color: #4CAF50;">Tornar a l'inici</a>
+</html>

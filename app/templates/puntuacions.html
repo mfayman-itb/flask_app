@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Puntuacions</title>
+    <style>
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Classificació del Torneig</h1>
+
+    <table>
+        <tr>
+            <th>Posició</th>
+            <th>Jugador</th>
+            <th>Punts</th>
+        </tr>
+        {% for jugador, punts in ranking %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ jugador }}</td>
+            <td>{{ punts }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/" style="text-decoration: none; color: #4CAF50;">← Tornar a l'inici</a>
+    </div>
+    <br>
+</body>
+</html>

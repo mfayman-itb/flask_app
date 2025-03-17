@@ -1,0 +1,154 @@
+{
+  "current_round": 4,
+  "participants": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "dd",
+    "fff",
+    "hhh",
+    "ddsad",
+    "ddsadagfdg",
+    "kjl",
+    "jhlhj",
+    "mhjh"
+  ],
+  "rounds": [
+    {
+      "round_number": 1,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "b"
+          ],
+          "winner": "a"
+        },
+        {
+          "participants": [
+            "c",
+            "d"
+          ],
+          "winner": "d"
+        },
+        {
+          "participants": [
+            "e",
+            "f"
+          ],
+          "winner": "f"
+        },
+        {
+          "participants": [
+            "g",
+            "h"
+          ],
+          "winner": "h"
+        },
+        {
+          "participants": [
+            "dd",
+            "fff"
+          ],
+          "winner": "fff"
+        },
+        {
+          "participants": [
+            "hhh",
+            "ddsad"
+          ],
+          "winner": "ddsad"
+        },
+        {
+          "participants": [
+            "ddsadagfdg",
+            "kjl"
+          ],
+          "winner": "kjl"
+        },
+        {
+          "participants": [
+            "jhlhj",
+            "mhjh"
+          ],
+          "winner": "mhjh"
+        }
+      ]
+    },
+    {
+      "round_number": 2,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "d"
+          ],
+          "winner": "a"
+        },
+        {
+          "participants": [
+            "f",
+            "h"
+          ],
+          "winner": "h"
+        },
+        {
+          "participants": [
+            "fff",
+            "ddsad"
+          ],
+          "winner": "ddsad"
+        },
+        {
+          "participants": [
+            "kjl",
+            "mhjh"
+          ],
+          "winner": "mhjh"
+        }
+      ]
+    },
+    {
+      "round_number": 3,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "h"
+          ],
+          "winner": "a"
+        },
+        {
+          "participants": [
+            "ddsad",
+            "mhjh"
+          ],
+          "winner": "ddsad"
+        }
+      ]
+    },
+    {
+      "round_number": 4,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "ddsad"
+          ],
+          "winner": "a"
+        }
+      ]
+    }
+  ],
+  "losers": [
+    {
+      "round": 4,
+      "player": "ddsad"
+    }
+  ]
+}

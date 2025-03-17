@@ -1,0 +1,77 @@
+{
+  "current_round": 2,
+  "rounds": [
+    {
+      "round_number": 1,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "b"
+          ],
+          "winner": "a"
+        }
+      ]
+    },
+    {
+      "round_number": 2,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "c"
+          ],
+          "winner": null
+        }
+      ]
+    },
+    {
+      "round_number": 3,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "d"
+          ],
+          "winner": null
+        }
+      ]
+    },
+    {
+      "round_number": 4,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "e"
+          ],
+          "winner": null
+        }
+      ]
+    },
+    {
+      "round_number": 5,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "f"
+          ],
+          "winner": null
+        }
+      ]
+    },
+    {
+      "round_number": 6,
+      "matches": [
+        {
+          "participants": [
+            "a",
+            "g"
+          ],
+          "winner": null
+        }
+      ]
+    }
+  ]
+}
